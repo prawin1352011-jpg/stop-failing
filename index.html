@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b2a41">
+<title>Stop Failing</title>
+<style>
+:root{--bg:#f3efe8;--surface:#fffdf9;--ink:#1b2a41;--muted:#5d6b80;--line:#ddd6c8;--accent:#e0642a;--accent-ink:#fff;--ok:#2f7d5b;--track:#e6dfd1;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111b2b;--surface:#1a2740;--ink:#f1ece2;--muted:#a3afc2;--line:#2c3b58;--accent:#ff8a4c;--accent-ink:#1b1206;--ok:#6fcf9f;--track:#2a3a58;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111b2b;--surface:#1a2740;--ink:#f1ece2;--muted:#a3afc2;--line:#2c3b58;--accent:#ff8a4c;--accent-ink:#1b1206;--ok:#6fcf9f;--track:#2a3a58;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Atkinson Hyperlegible","Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+main{max-width:480px;margin:0 auto;padding:20px 18px 40px}
+h1{font:700 22px/1.2 Georgia,"Times New Roman",serif;margin:0}
+h2{font:700 17px/1.3 Georgia,serif;margin:28px 0 10px}
+.brand{display:flex;align-items:center;gap:12px}.brand img{border-radius:12px;border:1.5px solid var(--line)}
+header{display:flex;justify-content:space-between;align-items:center}
+.sub{color:var(--muted);font-size:14px;margin:2px 0 0}
+button{font:inherit;cursor:pointer;border:0;border-radius:14px;padding:14px 18px;min-height:48px}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.primary{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.icon{min-height:40px;padding:8px 12px;font-size:14px}
+.hero{position:relative;width:min(80vw,320px);aspect-ratio:1;margin:26px auto 8px}
+.hero svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hero .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.days{font:700 84px/1 Georgia,serif;letter-spacing:-2px}
+.unit{color:var(--muted);font-size:15px}
+.clock{font-variant-numeric:tabular-nums;margin-top:6px;font-size:18px}
+.next{text-align:center;color:var(--muted);font-size:14px;margin:0 0 18px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat b{display:block;font:700 24px/1.2 Georgia,serif}
+.stat span{color:var(--muted);font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:6px 12px;border-radius:99px;border:1.5px solid var(--line);font-size:14px;color:var(--muted)}
+.chip.on{background:var(--ok);border-color:var(--ok);color:var(--bg);font-weight:700}
+.log{list-style:none;margin:0;padding:0}
+.log li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.log span{color:var(--muted)}
+.empty{color:var(--muted);font-size:15px}
+.quote{background:var(--surface);border-left:4px solid var(--accent);padding:12px 14px;border-radius:0 12px 12px 0;margin-top:22px;font-size:15px}
+.start{text-align:center;margin-top:60px}
+.start p{color:var(--muted);max-width:32ch;margin:10px auto 22px}
+dialog{border:0;border-radius:20px;padding:0;background:var(--surface);color:var(--ink);width:min(92vw,400px)}
+dialog::backdrop{background:rgba(10,16,28,.6)}
+.dlg{padding:24px;text-align:center}
+.breath{width:150px;height:150px;border-radius:50%;margin:22px auto;background:var(--accent);opacity:.9;transition:transform 4s ease-in-out}
+.phase{font:700 22px Georgia,serif;min-height:30px}
+.tips{text-align:left;color:var(--muted);font-size:14px;padding-left:18px;margin:14px 0}
+.btns{display:flex;gap:10px;justify-content:center;margin-top:12px}
+.foot{margin-top:30px;font-size:13px;color:var(--muted)}
+.joybox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}.joybox p{margin:0;font-size:15px}.joybox .empty{color:var(--muted)}#cv{width:100%;aspect-ratio:1;border-radius:16px;background:#14213d;margin:14px 0 6px;display:block}.scene{color:var(--muted);font-size:14px;margin:0 0 10px}
+@media (prefers-reduced-motion:reduce){.breath{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="brand"><img src="data:image/jpeg;base64,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" alt="Stop Failing logo" width="52" height="52"><div><h1>Stop Failing</h1><p class="sub">One day at a time. Private on your device.</p></div></div>
+  <button class="ghost icon" id="theme" aria-label="Switch light or dark theme">Theme</button>
+</header>
+<div id="app"></div>
+<p class="foot">Your data stays in this browser and is never uploaded. If urges feel overwhelming or hard to control, talking to a counsellor or doctor can help.</p>
+</main>
+
+<dialog id="urge"><div class="dlg">
+  <h1>Ride out the urge</h1>
+  <p class="sub">Urges peak and pass, usually within 15 to 20 minutes.</p>
+  <div class="breath" id="orb"></div>
+  <div class="phase" id="phase" aria-live="polite">Get ready</div>
+  <ul class="tips"><li>Stand up and leave the room you are in.</li><li>Put your phone down or switch to another app.</li><li>Drink water, then walk or do 20 push-ups.</li></ul>
+  <div class="btns"><button class="primary" id="go">Start breathing</button><button class="ghost" id="closeU">Close</button></div>
+</div></dialog>
+
+<dialog id="slip"><div class="dlg">
+  <h1>Log a slip?</h1>
+  <p class="sub">Your current streak is saved to your history and a new one starts. A slip is data, not failure.</p>
+  <div class="btns"><button class="primary" id="yes">Log and restart</button><button class="ghost" id="no">Cancel</button></div>
+</div></dialog>
+
+<dialog id="joyD"><div class="dlg">
+  <h1>Enjoyment</h1>
+  <p class="sub" id="praise">You earned this.</p>
+  <canvas id="cv" width="320" height="320" aria-label="Animated celebration"></canvas>
+  <p class="scene" id="sceneName"></p>
+  <div class="btns"><button class="primary" id="nextJ">Next animation</button><button class="ghost" id="closeJ">Close</button></div>
+</div></dialog>
+
+<script>
+(function(){
+var KEY="steady-v1",GOALS=[1,3,7,14,30,60,90,180,365];
+var DAY=86400000,state={start:null,history:[]};
+var QUOTES=["Every day you wait is a day you grow stronger.","You are not your urges. Watch them pass.","Small wins stack up. Today counts.","Discipline is choosing what you want most over what you want now.","Progress is not a straight line. Keep going."];
+try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&typeof p==="object")state=p;}}catch(e){}
+if(!Array.isArray(state.history))state.history=[];
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+try{var th=localStorage.getItem(KEY+"-theme");if(th)document.documentElement.setAttribute("data-theme",th);}catch(e){}
+document.getElementById("theme").onclick=function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  var n=dark?"light":"dark";document.documentElement.setAttribute("data-theme",n);
+  try{localStorage.setItem(KEY+"-theme",n);}catch(e){}
+};
+var app=document.getElementById("app");
+function pad(n){return String(n).padStart(2,"0");}
+function best(){var b=0;state.history.forEach(function(h){if(h.days>b)b=h.days;});if(state.start){var c=Math.floor((Date.now()-state.start)/DAY);if(c>b)b=c;}return b;}
+function fmtDate(t){return new Date(t).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});}
+function render(){
+  if(!state.start){
+    app.innerHTML='<div class="start"><h1>Ready when you are</h1><p>Start a streak and Steady will count every day, track your best run and cheer you on at each milestone.</p><button class="primary" id="begin">Start my streak</button></div>';
+    document.getElementById("begin").onclick=function(){state.start=Date.now();save();render();};
+    return;
+  }
+  var R=140,C=2*Math.PI*R;
+  var h=state.history.map(function(x){return '<li><b>'+x.days+(x.days===1?' day':' days')+'</b><span>'+fmtDate(x.from)+' to '+fmtDate(x.to)+'</span></li>';}).join("");
+  var q=QUOTES[Math.floor(Date.now()/DAY)%QUOTES.length];
+  app.innerHTML=
+  '<div class="hero"><svg viewBox="0 0 320 320" aria-hidden="true"><circle cx="160" cy="160" r="'+R+'" fill="none" stroke="var(--track)" stroke-width="14"/><circle id="arc" cx="160" cy="160" r="'+R+'" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"/></svg>'+
+  '<div class="c"><div class="days" id="d">0</div><div class="unit" id="u">days</div><div class="clock" id="clk">00:00:00</div></div></div>'+
+  '<p class="next" id="nx"></p>'+
+  '<div class="row"><button class="primary" id="urgeBtn">I feel an urge</button><button class="ghost" id="slipBtn">I slipped</button></div>'+
+  '<div class="stats"><div class="stat"><b id="bst">0</b><span>Best streak (days)</span></div><div class="stat"><b>'+state.history.length+'</b><span>Past attempts</span></div></div>'+
+  '<div class="quote">'+q+'</div>'+
+  '<h2>Enjoyment</h2><div class="joybox" id="joy"></div>'+
+  '<h2>Milestones</h2><div class="chips" id="ms"></div>'+
+  '<h2>History</h2>'+(h?'<ul class="log">'+h+'</ul>':'<p class="empty">No past streaks yet. Keep this one going.</p>')+
+  '<h2>Settings</h2><div class="row"><button class="ghost" id="edit">Change start date</button><button class="ghost" id="wipe">Erase all data</button></div><button class="ghost" id="test24" style="margin-top:10px;width:100%">Test: set timer to 24 hours done</button>';
+  document.getElementById("urgeBtn").onclick=openUrge;
+  document.getElementById("slipBtn").onclick=function(){document.getElementById("slip").showModal();};
+  document.getElementById("edit").onclick=function(){
+    var v=prompt("Start date (YYYY-MM-DD):",new Date(state.start).toISOString().slice(0,10));
+    if(!v)return;var t=new Date(v+"T00:00:00").getTime();
+    if(isNaN(t)||t>Date.now()){alert("Enter a valid date that is not in the future.");return;}
+    state.start=t;save();render();
+  };
+  document.getElementById("wipe").onclick=function(){
+    if(confirm("Erase your streak and history? This cannot be undone.")){state={start:null,history:[]};save();render();}
+  };
+  document.getElementById("test24").onclick=function(){state.start=Date.now()-DAY;state.joyShown=false;save();render();};
+  tick();
+}
+function tick(){
+  if(!state.start)return;
+  var el=Date.now()-state.start;if(el<0)el=0;
+  var d=Math.floor(el/DAY),rem=el%DAY;
+  var hh=Math.floor(rem/3600000),mm=Math.floor(rem%3600000/60000),ss=Math.floor(rem%60000/1000);
+  var $=function(i){return document.getElementById(i);};
+  if(!$("d"))return;
+  $("d").textContent=d;$("u").textContent=d===1?"day":"days";
+  $("clk").textContent=pad(hh)+":"+pad(mm)+":"+pad(ss);
+  var next=GOALS.find(function(g){return g>d;}),prev=0;
+  GOALS.forEach(function(g){if(g<=d)prev=g;});
+  var C=2*Math.PI*140,frac=next?((el/DAY)-prev)/(next-prev):1;
+  $("arc").setAttribute("stroke-dashoffset",C*(1-Math.min(1,Math.max(0,frac))));
+  $("nx").textContent=next?(next-d)+(next-d===1?" day":" days")+" to your "+next+"-day milestone":"You passed every milestone. Incredible.";
+  $("bst").textContent=best();
+  var jy=$("joy"),js=d>=1?"1":"0";
+  if(jy&&jy.dataset.s!==js){
+    jy.dataset.s=js;
+    if(d>=1){
+      jy.innerHTML='<p>Day 1 complete. Your animated rewards are unlocked.</p><button class="primary" id="joyBtn">Enjoy a surprise</button>';
+      document.getElementById("joyBtn").onclick=openJoy;
+    }else{
+      jy.innerHTML='<p class="empty">Locked. Finish 1 full day to unlock fun animated rewards.</p>';
+    }
+  }
+  if(d>=1&&!state.joyShown){state.joyShown=true;save();openJoy();}
+  $("ms").innerHTML=GOALS.map(function(g){return '<span class="chip'+(d>=g?' on':'')+'">'+g+(g===1?' day':' days')+'</span>';}).join("");
+}
+setInterval(tick,1000);
+document.getElementById("yes").onclick=function(){
+  var now=Date.now();
+  state.history.unshift({from:state.start,to:now,days:Math.floor((now-state.start)/DAY)});
+  state.history=state.history.slice(0,100);state.start=now;save();
+  document.getElementById("slip").close();render();
+};
+document.getElementById("no").onclick=function(){document.getElementById("slip").close();};
+
+var timer=null,orb=document.getElementById("orb"),phase=document.getElementById("phase"),goBtn=document.getElementById("go");
+function stopBreath(){clearTimeout(timer);timer=null;orb.style.transform="scale(1)";phase.textContent="Get ready";goBtn.textContent="Start breathing";}
+function openUrge(){stopBreath();document.getElementById("urge").showModal();}
+document.getElementById("closeU").onclick=function(){stopBreath();document.getElementById("urge").close();};
+document.getElementById("urge").addEventListener("close",stopBreath);
+goBtn.onclick=function(){
+  if(timer){stopBreath();return;}
+  goBtn.textContent="Stop";var cycles=0;
+  (function step(i){
+    var seq=[["Breathe in",1.5,4000],["Hold",1.5,4000],["Breathe out slowly",1,6000]];
+    var s=seq[i];phase.textContent=s[0];orb.style.transform="scale("+s[1]+")";
+    if(i===2){cycles++;}
+    if(cycles>=6&&i===2){timer=setTimeout(function(){stopBreath();phase.textContent="Well done. The wave is passing.";},s[2]);return;}
+    timer=setTimeout(function(){step((i+1)%3);},s[2]);
+  })(0);
+};
+/* Enjoyment: built-in animated rewards (no external files needed) */
+var cv=document.getElementById("cv"),cx=cv.getContext("2d"),raf=null,scene=0,parts=[],fr=0,W=320,H=320;
+var SCENES=["Confetti party","Fireworks","Balloons up","Emoji rain","Dance party"];
+var PRAISE=["One full day done. That takes real willpower.","You showed up and won today.","Proud of you. Keep stacking days.","Day 1 is the hardest. You did it."];
+var COLS=["#ff8a4c","#ffd166","#6fcf9f","#4cc9f0","#f72585","#b5179e"];
+var EMO=["🎉","🔥","💪","🌟","😎","🏆","🚀"];
+function rnd(a,b){return a+Math.random()*(b-a);}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function burst(x,y){for(var i=0;i<44;i++){var a=rnd(0,6.283),s=rnd(1,4.5);parts.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:60,c:pick(COLS)});}}
+function draw(){
+  cx.clearRect(0,0,W,H);fr++;var i,p;
+  if(scene===0){
+    if(fr%2===0)parts.push({x:rnd(0,W),y:-10,vy:rnd(1.5,3.5),vx:rnd(-.8,.8),r:rnd(0,6),vr:rnd(-.2,.2),c:pick(COLS)});
+    for(i=parts.length-1;i>=0;i--){p=parts[i];p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;
+      cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.fillRect(-5,-3,10,6);cx.restore();
+      if(p.y>H+10)parts.splice(i,1);}
+  }else if(scene===1){
+    if(fr%45===1)burst(rnd(60,260),rnd(50,170));
+    for(i=parts.length-1;i>=0;i--){p=parts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.05;p.l--;
+      cx.globalAlpha=Math.max(0,p.l/60);cx.fillStyle=p.c;cx.beginPath();cx.arc(p.x,p.y,2.6,0,6.283);cx.fill();
+      if(p.l<=0)parts.splice(i,1);}
+    cx.globalAlpha=1;
+  }else if(scene===2){
+    if(fr%20===0)parts.push({x:rnd(20,W-20),y:H+40,vy:rnd(.8,2),ph:rnd(0,6),c:pick(COLS)});
+    for(i=parts.length-1;i>=0;i--){p=parts[i];p.y-=p.vy;var sx=p.x+Math.sin(fr/25+p.ph)*10;
+      cx.strokeStyle="#ffffff88";cx.beginPath();cx.moveTo(sx,p.y+26);cx.lineTo(sx+Math.sin(fr/20)*4,p.y+60);cx.stroke();
+      cx.fillStyle=p.c;cx.beginPath();cx.ellipse(sx,p.y,18,23,0,0,6.283);cx.fill();
+      if(p.y<-60)parts.splice(i,1);}
+  }else if(scene===3){
+    cx.textAlign="center";cx.font="28px serif";
+    if(fr%8===0)parts.push({x:rnd(20,W-20),y:-20,vy:rnd(2,4),e:pick(EMO)});
+    for(i=parts.length-1;i>=0;i--){p=parts[i];p.y+=p.vy;cx.fillText(p.e,p.x,p.y);if(p.y>H+30)parts.splice(i,1);}
+  }else{
+    cx.fillStyle="hsla("+(fr*3%360)+",80%,55%,.25)";cx.fillRect(0,0,W,H);
+    cx.textAlign="center";cx.textBaseline="middle";
+    var d3=[[80,"😎"],[160,"🕺"],[240,"💃"]];
+    d3.forEach(function(e,k){var b=Math.abs(Math.sin(fr/10+k))*50;
+      cx.save();cx.translate(e[0],220-b);cx.rotate(Math.sin(fr/8+k)*.3);cx.font=(k===1?80:60)+"px serif";cx.fillText(e[1],0,0);cx.restore();});
+    cx.font="22px serif";cx.fillText("🎶  🎵  🎶",160,60+Math.sin(fr/12)*8);cx.textBaseline="alphabetic";
+  }
+  raf=requestAnimationFrame(draw);
+}
+function startScene(n){cancelAnimationFrame(raf);scene=n%SCENES.length;parts=[];fr=0;document.getElementById("sceneName").textContent=SCENES[scene];draw();}
+function openJoy(){
+  var dlg=document.getElementById("joyD");if(dlg.open)return;
+  document.getElementById("praise").textContent=pick(PRAISE);
+  dlg.showModal();startScene(Math.floor(Math.random()*SCENES.length));
+}
+document.getElementById("nextJ").onclick=function(){startScene(scene+1);};
+document.getElementById("closeJ").onclick=function(){document.getElementById("joyD").close();};
+document.getElementById("joyD").addEventListener("close",function(){cancelAnimationFrame(raf);});
+render();
+})();
+</script>
+</body>
+</html>
