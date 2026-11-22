@@ -14,11 +14,19 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - run: npm install
+      - name: Prepare app
+        run: |
+          mkdir -p www assets
+          cp index.html www/index.html
+          cp icon-only.png assets/icon-only.png
+          [ -f package.json ] || npm init -y
+          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor/assets@3
+          [ -f capacitor.config.json ] || npx cap init "Stop Failing" com.stopfailing.app --web-dir www
       - run: npx cap add android
       - run: npx @capacitor/assets generate --android
       - run: npx cap sync
-      - run: |
+      - name: Build APK
+        run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
@@ -26,4 +34,3 @@ jobs:
         with:
           name: stop-failing-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-
